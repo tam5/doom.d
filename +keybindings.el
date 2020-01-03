@@ -1,15 +1,23 @@
 ;;; $DOOMDIR/+keybindings.el -*- lexical-binding: t; -*-
+;;;
+;;; /-----------------------------------------------------------------------------------------
+;;; | Keybindings
+;;; |-----------------------------------------------------------------------------------------
+;;; |
+;;; | The heart and sole of our editor is, of course, the keybindings. Doom itself provides
+;;; | most of the keybindings, but we have some extra to add. Additionally, a few things
+;;; | here are just habits that have stuck with me even if they don't make any sense.
+;;; /
 
-;; Place all keybinding overrides here
+(defconst +keybindings/prefix ","
+  "Define the prefix key. This is the equivalent of the <leader> key in vim.")
 
-(defconst +tweaks/prefix ","
-  "Define the extra prefix key.")
-
-;; prefix based bindings
+;;
+;; Prefix based
+;;
 (map!
- :prefix +tweaks/prefix
- :n "ev" #'+default/browse-emacsd
- :n "ed" #'doom/open-private-config
+ :prefix +keybindings/prefix
+ :n "ev" (lambda () (interactive) (find-file (file-truename "~/.doom.d/config.el")))
  :n "ek" (lambda () (interactive) (find-file (file-truename "~/.doom.d/+keybindings.el")))
  :n "1" #'+treemacs/toggle
  :n "2" #'+treemacs/find-file
@@ -21,18 +29,16 @@
  :n "w" #'save-buffer
  :n "q" #'evil-quit
  :n "s" #'+default/search-project
- :v "s" #'+tweaks/sort-list
- :nv (concat +tweaks/prefix "j") #'json-pretty-print
- :n (concat +tweaks/prefix "b") #'eval-buffer
- :n (concat +tweaks/prefix "s") #'ivy-resume)
+ :v "s" #'+utils/sort-list
+ :nv (concat +keybindings/prefix "j") #'json-pretty-print
+ :n (concat +keybindings/prefix "b") #'eval-buffer
+ :n (concat +keybindings/prefix "s") #'ivy-resume)
 
-(map! :mode restclient-mode
-      :prefix +tweaks/prefix
-      :n "r" #'restclient-http-send-current)
-
-;; non prefix based bindings
+;;
+;; Non-Prefix based
+;;
 (map!
- :i "M-`" #'+tweaks/insert-backtic
+ :i "M-`" #'+utils/insert-backtic
  :n "-" #'dired-jump
  :n "C-p" #'+ivy/projectile-find-file
  :n "gr" #'lsp-find-references
@@ -44,21 +50,16 @@
  :nv "s-r" #'imenu
  :nvi "S-s-<return>" #'doom/window-maximize-buffer)
 
-;; markdown mode bindings
+;;
+;; Mode specific
+;;
+(after! restclient-mode
+  (map! :mode restclient-mode
+        :prefix +keybindings/prefix
+        :n "r" #'restclient-http-send-current))
+
 (after! markdown-mode
   (map! :map markdown-mode-map
         :nvi "s-b" #'markdown-insert-bold
         :nvi "s-i" #'markdown-insert-italic
-        :i "M-`" #'+tweaks/insert-backtic))
-
-;; TODO move these somewhere else
-(defun +tweaks/insert-backtic ()
-  "Fix for my backtick hotkey to iTerm."
-  (interactive)
-  (insert "`"))
-
-(defun +tweaks/sort-list ()
-  (interactive)
-  (if (< 1 (count-lines (region-beginning) (region-end)))
-      (call-interactively 'sort-lines)
-  (sort-regexp-fields nil "[a-z]+" "\\&" (region-beginning) (region-end))))
+        :i "M-`" #'+utils/insert-backtic))
