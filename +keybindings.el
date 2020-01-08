@@ -39,6 +39,7 @@
 ;;
 (map!
  :i "M-`" #'+utils/insert-backtic
+ :n "/" #'swiper-isearch
  :n "-" #'dired-jump
  :n "C-p" #'+ivy/projectile-find-file
  :n "gr" #'lsp-find-references
