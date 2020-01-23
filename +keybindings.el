@@ -45,7 +45,7 @@
  :n "gr" #'lsp-find-references
  :ni "C-j" #'emmet-expand-yas
  :nvi "C-a" #'evil-numbers/inc-at-pt
- :nvi "C-A" #'evil-numbers/inc-at-pt
+ :nvi "C-s" #'evil-numbers/dec-at-pt
  :nv "M-<down>" #'evil-mc-make-cursor-move-next-line
  :nv "M-<up>" #'evil-mc-make-cursor-move-prev-line
  :nv "s-r" #'imenu
