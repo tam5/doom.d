@@ -54,10 +54,10 @@
 ;;
 ;; Mode specific
 ;;
-(after! restclient-mode
-  (map! :mode restclient-mode
-        :prefix +keybindings/prefix
-        :n "r" #'restclient-http-send-current))
+
+(map! :mode restclient-mode
+      :prefix +keybindings/prefix
+      :n "r" #'restclient-http-send-current)
 
 (after! markdown-mode
   (map! :map markdown-mode-map
