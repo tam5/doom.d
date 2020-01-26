@@ -1,0 +1,13 @@
+# -*- mode: snippet -*-
+# name: constructor
+# key: _c
+# --
+/**
+ * Create a new instance.
+ *
+ * @return void
+ */
+ public function __construct($1)
+ {
+     //
+ }
