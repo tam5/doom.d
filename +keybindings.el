@@ -19,6 +19,7 @@
  :prefix +keybindings/prefix
  :n "ev" (lambda () (interactive) (find-file (file-truename "~/.doom.d/config.el")))
  :n "ek" (lambda () (interactive) (find-file (file-truename "~/.doom.d/+keybindings.el")))
+ :n "es" (lambda () (interactive) (find-file (file-truename "~/.dotfiles/aliases")))
  :n "1" #'+treemacs/toggle
  :n "2" #'+treemacs/find-file
  :n "j" #'counsel-projectile-switch-project
