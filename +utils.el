@@ -35,3 +35,23 @@ multiple lines are selected, the lines will sort themselves instead."
         (let ((face (or (get-char-property (point) 'read-face-name)
             (get-char-property (point) 'face))))
     (if face (message "Face: %s" face) (message "No face at %d" pos))))
+
+
+(defun +utils/multiline-args (start end)
+  "Convert single line args into multi line args by splitting on commas.
+To use it properly, select everything within the delimiters."
+  (interactive "r\n")
+  (let ((insertion
+         (mapconcat
+          (lambda (x) (format "%s" x))
+          (split-string (buffer-substring start end)) "\n")))
+    (delete-region start end)
+    (insert insertion))
+  (save-excursion
+    (goto-char (region-beginning))
+    (insert "\n"))
+  (save-excursion
+    (goto-char (region-end))
+    (message "Start: %s, End %s" (region-beginning) (region-end))
+    (insert "\n"))
+  (evil-indent (region-beginning) (region-end)))
