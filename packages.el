@@ -55,3 +55,5 @@
 (package! vue-mode)
 (package! sws-mode)
 (package! evil-embrace :disable t)
+
+(package! prettier-js)

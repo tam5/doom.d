@@ -18,3 +18,5 @@
 ;; some email clients, file templates and snippets.
 (setq user-full-name "Ari Miller"
       user-mail-address "arimiller92@gmail.com")
+
+(add-hook 'web-mode-hook 'prettier-js-mode)

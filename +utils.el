@@ -36,7 +36,6 @@ multiple lines are selected, the lines will sort themselves instead."
             (get-char-property (point) 'face))))
     (if face (message "Face: %s" face) (message "No face at %d" pos))))
 
-
 (defun +utils/multiline-args (start end)
   "Convert single line args into multi line args by splitting on commas.
 To use it properly, select everything within the delimiters."
