@@ -26,6 +26,7 @@
  :n "f" #'evil-avy-goto-word-0
  :n "v" #'evil-window-vsplit
  :n "h" #'evil-window-split
+ :n "p" #'+popup/raise
  :n "d" #'kill-this-buffer
  :n "w" #'save-buffer
  :n "q" #'evil-quit
