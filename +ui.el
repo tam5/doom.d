@@ -19,8 +19,8 @@
 ;; They all accept either a font-spec, font string ("Input Mono-12"), or xlfd
 ;; font string. You generally only need these two:
 ;; test
-(setq doom-font (font-spec :family "Operator Mono 1.3" :size 14)
-      doom-variable-pitch-font (font-spec :family "Operator Mono"))
+; (setq doom-font (font-spec :family "Operator Mono 1.3" :size 14)
+;       doom-variable-pitch-font (font-spec :family "Operator Mono"))
 
 (defface +ui/dashboard-face
   `((t (:family "Menlo")))
@@ -45,6 +45,3 @@
 
 (after! highlight-indent-guides
   (setq highlight-indent-guides-character ?\┊))
-
-;; add our theme to the list of solaire themes so it will swap the bg for us
-(add-to-list '+doom-solaire-themes '(doom-material . t))
