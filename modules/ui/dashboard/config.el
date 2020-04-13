@@ -1,12 +1,21 @@
 ;;; ui/doom-dashboard/config.el -*- lexical-binding: t; -*-
 
+(require 'request)
+(require 'json)
+
 (defvar +doom-dashboard-name "*doom*"
   "The name to use for the dashboard buffer.")
 
+(defvar +doom-dashboard-user-name "Ari")
+(defvar +doom-dashboard-link "https://github.com/tam5")
+
 (defvar +doom-dashboard-functions
   '(doom-dashboard-widget-banner
+    doom-dashboard-widget-greeting
+    doom-dashboard-widget-inspiration
     doom-dashboard-widget-shortmenu
     doom-dashboard-widget-loaded
+    doom-dashboard-widget-title
     doom-dashboard-widget-footer)
   "List of widget functions to run in the dashboard buffer to construct the
 dashboard. These functions take no arguments and the dashboard buffer is current
@@ -19,8 +28,11 @@ relative to `+doom-dashboard-banner-dir'. If nil, always use the ASCII banner.")
 (defvar +doom-dashboard-banner-dir (concat (dir!) "/banners/")
   "Where to look for `+doom-dashboard-banner-file'.")
 
-(defvar +doom-dashboard-banner-padding '(0 . 4)
+(defvar +doom-dashboard-banner-padding '(0 . 0)
   "Number of newlines to pad the banner with, above and below, respectively.")
+
+(defvar +doom-dashboard-container-width 80
+  "Max width of centered text.")
 
 (defvar +doom-dashboard-inhibit-refresh nil
   "If non-nil, the doom buffer won't be refreshed.")
@@ -81,6 +93,10 @@ PLIST can have the following properties:
 (defvar all-the-icons-scale-factor)
 (defvar all-the-icons-default-adjust)
 
+(defvar +doom-dashboard-inspiring-quote nil)
+(defvar +doom-dashboard-fallback-quote
+  "And I knew exactly what to do. But in a much more real sense, I had no idea what to do.")
+
 
 ;;
 ;;; Bootstrap
@@ -124,7 +140,11 @@ PLIST can have the following properties:
   :prefix "doom-dashboard"
   :group 'doom-themes)
 
-(defface doom-dashboard-banner '((t (:inherit font-lock-comment-face)))
+(defface doom-dashboard-banner '((t (:inherit 'default)))
+  "Face used for the DOOM banner on the dashboard"
+  :group 'doom-dashboard)
+
+(defface doom-dashboard-quote '((t (:inherit font-lock-comment-face)))
   "Face used for the DOOM banner on the dashboard"
   :group 'doom-dashboard)
 
@@ -337,15 +357,11 @@ controlled by `+doom-dashboard-pwd-policy'."
 
 ;; helpers
 (defun +doom-dashboard--center (len s)
-  (concat (make-string (ceiling (max 0 (- len (length s))) 2) ? )
+  (concat "\t" (make-string (ceiling (max 0 (- len (length s))) 2) ? )
           s))
 
 (defun +dashboard-calc--width ()
   (window-width (get-buffer-window)))
-
-(defun aritest ()
-  (interactive)
-  (message "test %s" (+dashboard-calc--width)))
 
 (defun +doom-dashboard--get-pwd ()
   (let ((lastcwd +doom-dashboard--last-cwd)
@@ -367,14 +383,34 @@ controlled by `+doom-dashboard-pwd-policy'."
           ((warn "`+doom-dashboard-pwd-policy' has an invalid value of '%s'"
                  policy)))))
 
-(defun round-to-even (num)
-  "Force a number to be even."
-  (let ((int (round num)))
-    (if (eq 1 (% int 2)) (+ int 1)
-      int)))
+(defun fetch-inspiring-quote ()
+  (or (alist-get 'quoteText
+             (request-response-data
+              (request
+                "http://api.forismatic.com/api/1.0/"
+                :type "POST"
+                :data '(("method" . "getQuote") ("format" . "json") ("lang" . "en"))
+                :sync t
+                :parser 'json-read)))
+      +doom-dashboard-fallback-quote))
+
+
+(defun inspiring-quote ()
+  (unless (stringp +doom-dashboard-inspiring-quote)
+    (setq +doom-dashboard-inspiring-quote (fetch-inspiring-quote)))
+  +doom-dashboard-inspiring-quote)
+
 
 ;;
 ;;; Widgets
+
+(defun doom-dashboard-widget-title ()
+  (insert
+   "\n\n"
+   (propertize
+    (+doom-dashboard--center (+dashboard-calc--width) "E M A C S")
+    'face 'doom-dashboard-banner)
+   "\n"))
 
 (defun doom-dashboard-widget-banner ()
   (let ((point (point)))
@@ -418,9 +454,28 @@ controlled by `+doom-dashboard-pwd-policy'."
       (insert (make-string (or (cdr +doom-dashboard-banner-padding) 0)
                            ?\n)))))
 
-(defun doom-dashboard-widget-loaded ()
+(defun doom-dashboard-widget-greeting ()
+  (insert
+   "\n"
+   (propertize
+    (+doom-dashboard--center (+dashboard-calc--width) (format "Welcome, %s" +doom-dashboard-user-name))
+    'face 'doom-dashboard-banner)
+   "\n"))
+
+(defun doom-dashboard-widget-inspiration ()
   (insert
    "\n\n"
+   (mapconcat (lambda (line)
+                (propertize
+                 (+doom-dashboard--center (+dashboard-calc--width) line)
+                 'face 'doom-dashboard-quote))
+              (split-string (s-word-wrap +doom-dashboard-container-width (inspiring-quote)) "\n")
+              "\n")
+   "\n"))
+
+(defun doom-dashboard-widget-loaded ()
+  (insert
+   "\n"
    (propertize
     (+doom-dashboard--center
     (+dashboard-calc--width)
@@ -431,7 +486,7 @@ controlled by `+doom-dashboard-pwd-policy'."
 (defun doom-dashboard-widget-shortmenu ()
   (let ((all-the-icons-scale-factor 1.45)
         (all-the-icons-default-adjust -0.02))
-    (insert "\n")
+    (insert "\n\n")
     (dolist (section +doom-dashboard-menu-sections)
       (cl-destructuring-bind (label &key icon action when face) section
         (when (and (fboundp action)
@@ -441,7 +496,7 @@ controlled by `+doom-dashboard-pwd-policy'."
            (+doom-dashboard--center
             (- (+dashboard-calc--width) 1)
             (let ((icon (if (stringp icon) icon (eval icon t))))
-              (format (format "%s%%s%%-10s" (if icon "%3s " "%3s"))
+              (format (format "%s%%s%%-10s" (if icon "\t%3s\t" "%3s"))
                       (or icon "")
                       (with-temp-buffer
                         (insert-text-button
@@ -478,10 +533,10 @@ controlled by `+doom-dashboard-pwd-policy'."
    (+doom-dashboard--center
     (- (+dashboard-calc--width) 2)
     (with-temp-buffer
-      (insert-text-button (or (all-the-icons-octicon "octoface" :face 'doom-dashboard-footer-icon :height 1.3 :v-adjust -0.15)
+      (insert-text-button (or (all-the-icons-faicon "rocket" :face 'doom-dashboard-footer-icon :height 1.3 :v-adjust -0.15)
                               (propertize "github" 'face 'doom-dashboard-footer))
-                          'action (lambda (_) (browse-url "https://github.com/hlissner/doom-emacs"))
+                          'action (lambda (_) (browse-url +doom-dashboard-link))
                           'follow-link t
-                          'help-echo "Open Doom Emacs github page")
+                          'help-echo "Open github")
       (buffer-string)))
    "\n"))

@@ -59,3 +59,4 @@
 (package! typescript-mode :recipe (:branch "feature/types-in-declarations"))
 
 (package! prettier-js)
+(package! request)
