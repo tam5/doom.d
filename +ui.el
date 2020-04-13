@@ -33,7 +33,7 @@
 ;; There are two ways to load a theme. Both assume the theme is installed and
 ;; available. You can either set `doom-theme' or manually load a theme with the
 ;; `load-theme' function. These are the defaults.
-(setq doom-theme 'doom-material)
+(setq doom-theme 'doom-moonlight)
 
 ;; If you want to change the style of line numbers, change this to `relative' or
 ;; `nil' to disable it:
