@@ -4,7 +4,7 @@
   "The name to use for the dashboard buffer.")
 
 (defvar +doom-dashboard-functions
-  '(+dashboard-widget-banner
+  '(doom-dashboard-widget-banner
     doom-dashboard-widget-shortmenu
     doom-dashboard-widget-loaded
     doom-dashboard-widget-footer)
@@ -42,34 +42,19 @@ Possible values:
   nil            `default-directory' will never change")
 
 (defvar +doom-dashboard-menu-sections
-  '(("Reload last session"
-     :icon (all-the-icons-octicon "history" :face 'doom-dashboard-menu-title)
-     :when (cond ((require 'persp-mode nil t)
-                  (file-exists-p (expand-file-name persp-auto-save-fname persp-save-dir)))
-                 ((require 'desktop nil t)
-                  (file-exists-p (desktop-full-file-name))))
-     :face (:inherit (doom-dashboard-menu-title bold))
-     :action doom/quickload-session)
+  '(("Open project"
+     :icon (all-the-icons-octicon "briefcase" :face 'doom-dashboard-menu-title)
+     :action projectile-switch-project)
+    ("Recently opened files"
+     :icon (all-the-icons-octicon "file-text" :face 'doom-dashboard-menu-title)
+     :action recentf-open-files)
     ("Open org-agenda"
      :icon (all-the-icons-octicon "calendar" :face 'doom-dashboard-menu-title)
      :when (fboundp 'org-agenda)
      :action org-agenda)
-    ("Recently opened files"
-     :icon (all-the-icons-octicon "file-text" :face 'doom-dashboard-menu-title)
-     :action recentf-open-files)
-    ("Open project"
-     :icon (all-the-icons-octicon "briefcase" :face 'doom-dashboard-menu-title)
-     :action projectile-switch-project)
     ("Jump to bookmark"
      :icon (all-the-icons-octicon "bookmark" :face 'doom-dashboard-menu-title)
-     :action bookmark-jump)
-    ("Open private configuration"
-     :icon (all-the-icons-octicon "tools" :face 'doom-dashboard-menu-title)
-     :when (file-directory-p doom-private-dir)
-     :action doom/open-private-config)
-    ("Open documentation"
-     :icon (all-the-icons-octicon "book" :face 'doom-dashboard-menu-title)
-     :action doom/help))
+     :action bookmark-jump))
   "An alist of menu buttons used by `doom-dashboard-widget-shortmenu'. Each
 element is a cons cell (LABEL . PLIST). LABEL is a string to display after the
 icon and before the key string.
@@ -89,32 +74,12 @@ PLIST can have the following properties:
 
 ;;
 (defvar +doom-dashboard--last-cwd nil)
-(defvar +doom-dashboard--width 80)
 (defvar +doom-dashboard--old-fringe-indicator fringe-indicator-alist)
 (defvar +doom-dashboard--pwd-alist ())
 (defvar +doom-dashboard--reload-timer nil)
 
 (defvar all-the-icons-scale-factor)
 (defvar all-the-icons-default-adjust)
-
-(defcustom dashboard-image-banner-max-height 0
-  "Maximum height of banner image.
-This setting applies only if Emacs is compiled with Imagemagick
-support.  When value is non-zero the image banner will be resized
-to the specified height, with aspect ratio preserved."
-  :type 'integer
-  :group 'dashboard)
-
-(defcustom dashboard-image-banner-max-width 0
-  "Maximum width of banner image.
-This setting applies if Emacs is compiled with Imagemagick
-support.  When value is non-zero the image banner will be resized
-to the specified width, with aspect ratio preserved."
-  :type 'integer
-  :group 'dashboard)
-
-(defconst dashboard-banner-length 75
-  "Width of a banner.")
 
 
 ;;
@@ -137,8 +102,8 @@ to the specified width, with aspect ratio preserved."
           (add-hook 'after-make-frame-functions #'+doom-dashboard-reload-frame-h)
         (+doom-dashboard-reload)))
     ;; Ensure the dashboard is up-to-date whenever it is switched to or resized.
-    (add-hook 'window-configuration-change-hook #'+doom-dashboard-resize-h)
-    (add-hook 'window-size-change-functions #'+doom-dashboard-resize-h)
+    (add-hook 'window-configuration-change-hook #'+doom-dashboard-reload-maybe-h)
+    (add-hook 'window-size-change-functions #'+doom-dashboard-reload-maybe-h)
     (add-hook 'doom-switch-buffer-hook #'+doom-dashboard-reload-maybe-h)
     (add-hook 'delete-frame-functions #'+doom-dashboard-reload-frame-h)
     ;; `persp-mode' integration: update `default-directory' when switching perspectives
@@ -288,8 +253,8 @@ whose dimensions may not be fully initialized by the time this is run."
       (dolist (win windows)
         (set-window-start win 0)
         (set-window-fringes win 0 0)
-        (set-window-margins win 0 0))
-         ;; win (max 0 (/ (- (window-total-width win) +doom-dashboard--width) 2))))
+        (set-window-margins
+         win (max 0 (/ (- (window-total-width win) (+dashboard-calc--width)) 2))))
       (when windows
         (with-current-buffer (doom-fallback-buffer)
           (save-excursion
@@ -299,7 +264,7 @@ whose dimensions may not be fully initialized by the time this is run."
                              (save-excursion (skip-chars-forward "\n")
                                              (point)))
               (insert (make-string
-                       (+ (max 0 (- (/ (window-height (get-buffer-window)) 8)
+                       (+ (max 0 (- (/ (window-height (get-buffer-window)) 6)
                                     (round (/ (count-lines (point-min) (point-max))
                                               2))))
                           (car +doom-dashboard-banner-padding))
@@ -375,6 +340,13 @@ controlled by `+doom-dashboard-pwd-policy'."
   (concat (make-string (ceiling (max 0 (- len (length s))) 2) ? )
           s))
 
+(defun +dashboard-calc--width ()
+  (window-width (get-buffer-window)))
+
+(defun aritest ()
+  (interactive)
+  (message "test %s" (+dashboard-calc--width)))
+
 (defun +doom-dashboard--get-pwd ()
   (let ((lastcwd +doom-dashboard--last-cwd)
         (policy +doom-dashboard-pwd-policy))
@@ -395,39 +367,63 @@ controlled by `+doom-dashboard-pwd-policy'."
           ((warn "`+doom-dashboard-pwd-policy' has an invalid value of '%s'"
                  policy)))))
 
-(defun +dashboard-banner-height ()
-  (round (/ (window-height (get-buffer-window)) .15)))
+(defun round-to-even (num)
+  "Force a number to be even."
+  (let ((int (round num)))
+    (if (eq 1 (% int 2)) (+ int 1)
+      int)))
 
 ;;
 ;;; Widgets
 
-
-(defun +dashboard-widget-banner ()
-  "Display an image BANNER."
-  (when (file-exists-p fancy-splash-image)
-    (let* ((banner fancy-splash-image)
-           (spec
-            (if (image-type-available-p 'imagemagick)
-                (apply 'create-image banner 'imagemagick nil
-                       (append (when (> dashboard-image-banner-max-width 0)
-                                 (list :max-width dashboard-image-banner-max-width))
-                               (list :max-height (+dashboard-banner-height))))
-              (create-image banner)))
-           (size (image-size spec))
-           (width (car size))
-           (left-margin (max 0 (floor (- dashboard-banner-length width) 2))))
-      (goto-char (point-min))
-      (insert "\n")
-      (insert (make-string left-margin ?\ ))
-      (insert-image spec)
-      (insert "\n\n"))))
+(defun doom-dashboard-widget-banner ()
+  (let ((point (point)))
+    (mapc (lambda (line)
+            (insert (propertize (+doom-dashboard--center (+dashboard-calc--width) line)
+                                'face 'doom-dashboard-banner) " ")
+            (insert "\n"))
+          '("=================     ===============     ===============   ========  ========"
+            "\\\\ . . . . . . .\\\\   //. . . . . . .\\\\   //. . . . . . .\\\\  \\\\. . .\\\\// . . //"
+            "||. . ._____. . .|| ||. . ._____. . .|| ||. . ._____. . .|| || . . .\\/ . . .||"
+            "|| . .||   ||. . || || . .||   ||. . || || . .||   ||. . || ||. . . . . . . ||"
+            "||. . ||   || . .|| ||. . ||   || . .|| ||. . ||   || . .|| || . | . . . . .||"
+            "|| . .||   ||. _-|| ||-_ .||   ||. . || || . .||   ||. _-|| ||-_.|\\ . . . . ||"
+            "||. . ||   ||-'  || ||  `-||   || . .|| ||. . ||   ||-'  || ||  `|\\_ . .|. .||"
+            "|| . _||   ||    || ||    ||   ||_ . || || . _||   ||    || ||   |\\ `-_/| . ||"
+            "||_-' ||  .|/    || ||    \\|.  || `-_|| ||_-' ||  .|/    || ||   | \\  / |-_.||"
+            "||    ||_-'      || ||      `-_||    || ||    ||_-'      || ||   | \\  / |  `||"
+            "||    `'         || ||         `'    || ||    `'         || ||   | \\  / |   ||"
+            "||            .===' `===.         .==='.`===.         .===' /==. |  \\/  |   ||"
+            "||         .=='   \\_|-_ `===. .==='   _|_   `===. .===' _-|/   `==  \\/  |   ||"
+            "||      .=='    _-'    `-_  `='    _-'   `-_    `='  _-'   `-_  /|  \\/  |   ||"
+            "||   .=='    _-'          '-__\\._-'         '-_./__-'         `' |. /|  |   ||"
+            "||.=='    _-'                                                     `' |  /==.||"
+            "=='    _-'                         E M A C S                          \\/   `=="
+            "\\   _-'                                                                `-_   /"
+            " `''                                                                      ``'"))
+    (when (and (display-graphic-p)
+               (stringp fancy-splash-image)
+               (file-readable-p fancy-splash-image))
+      (let ((image (create-image (fancy-splash-image-file))))
+        (add-text-properties
+         point (point) `(display ,image rear-nonsticky (display)))
+        (save-excursion
+          (goto-char point)
+          (insert (make-string
+                   (truncate
+                    (max 0 (+ 1 (/ (- (+dashboard-calc--width)
+                                      (car (image-size image nil)))
+                                   2))))
+                   ? ))))
+      (insert (make-string (or (cdr +doom-dashboard-banner-padding) 0)
+                           ?\n)))))
 
 (defun doom-dashboard-widget-loaded ()
   (insert
    "\n\n"
    (propertize
     (+doom-dashboard--center
-     +doom-dashboard--width
+    (+dashboard-calc--width)
      (doom-display-benchmark-h 'return))
     'face 'doom-dashboard-loaded)
    "\n"))
@@ -443,9 +439,9 @@ controlled by `+doom-dashboard-pwd-policy'."
                        (eval when t)))
           (insert
            (+doom-dashboard--center
-            (- +doom-dashboard--width 1)
+            (- (+dashboard-calc--width) 1)
             (let ((icon (if (stringp icon) icon (eval icon t))))
-              (format (format "%s%%s%%-10s" (if icon "%3s\t" "%3s"))
+              (format (format "%s%%s%%-10s" (if icon "%3s " "%3s"))
                       (or icon "")
                       (with-temp-buffer
                         (insert-text-button
@@ -480,7 +476,7 @@ controlled by `+doom-dashboard-pwd-policy'."
   (insert
    "\n"
    (+doom-dashboard--center
-    (- +doom-dashboard--width 2)
+    (- (+dashboard-calc--width) 2)
     (with-temp-buffer
       (insert-text-button (or (all-the-icons-octicon "octoface" :face 'doom-dashboard-footer-icon :height 1.3 :v-adjust -0.15)
                               (propertize "github" 'face 'doom-dashboard-footer))
