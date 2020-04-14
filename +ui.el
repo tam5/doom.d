@@ -45,3 +45,28 @@
 
 (after! highlight-indent-guides
   (setq highlight-indent-guides-character ?\┊))
+
+
+;; let's keep the window nice and minimal
+(setq default-frame-alist '((undecorated . t)))
+(add-to-list 'default-frame-alist '(drag-internal-border . 1))
+(add-to-list 'default-frame-alist '(internal-border-width . 1))
+(toggle-scroll-bar -1)
+
+(defvar +ui/frame-gutter-factor 20)
+
+;; auto set the frame size to 'fullscreen' but with
+;; some uniform gutters to add some breathing room
+(setq frame-resize-pixelwise t)
+
+(set-frame-size
+ (selected-frame)
+ (- (display-pixel-width) (* 3 +ui/frame-gutter-factor))
+ (- (display-pixel-height) (* 6 +ui/frame-gutter-factor))
+ t)
+
+(defun +ui/reposition ()
+  "Reposition the frame to be centered on the screen."
+  (set-frame-position (selected-frame) +ui/frame-gutter-factor (* 2 +ui/frame-gutter-factor)))
+
+(add-hook 'window-setup-hook #'+ui/reposition)

@@ -54,3 +54,10 @@ To use it properly, select everything within the delimiters."
     (message "Start: %s, End %s" (region-beginning) (region-end))
     (insert "\n"))
   (evil-indent (region-beginning) (region-end)))
+
+(defun +utils/toggle-frame-decoration ()
+  "Toggle the frame as undecorated."
+  (interactive)
+  (let* ((frame (selected-frame))
+         (current-decoration (frame-parameter frame 'undecorated)))
+    (set-frame-parameter frame 'undecorated (not current-decoration))))
