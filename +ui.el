@@ -20,7 +20,7 @@
 ;; font string. You generally only need these two:
 ;; test
 (setq doom-font (font-spec :family "Menlo" :size 14 :weight 'semi-light)
-      doom-variable-pitch-font (font-spec :family "sans" :size 16))
+      doom-variable-pitch-font (font-spec :family "Menlo" :size 16))
 
 (defface +ui/dashboard-face
   `((t (:family "Menlo")))
