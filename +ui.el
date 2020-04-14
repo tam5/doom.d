@@ -22,6 +22,9 @@
 ; (setq doom-font (font-spec :family "Operator Mono 1.3" :size 14)
 ;       doom-variable-pitch-font (font-spec :family "Operator Mono"))
 
+(setq doom-font (font-spec :family "Menlo" :size 15 :weight 'semi-light)
+      doom-variable-pitch-font (font-spec :family "sans" :size 16))
+
 (defface +ui/dashboard-face
   `((t (:family "Menlo")))
   "Face to use for the dashboard."
