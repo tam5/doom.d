@@ -62,6 +62,12 @@
       :prefix +keybindings/prefix
       :n "r" #'restclient-http-send-current)
 
+(map! :mode php-mode
+      :prefix +keybindings/prefix
+      :n "tt" #'phpunit-current-test
+      :n "tc" #'phpunit-current-class
+      :n "ta" #'phpunit-current-project)
+
 (after! markdown-mode
   (map! :map markdown-mode-map
         :nvi "s-b" #'markdown-insert-bold
