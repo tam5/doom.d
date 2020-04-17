@@ -19,8 +19,8 @@
 ;; They all accept either a font-spec, font string ("Input Mono-12"), or xlfd
 ;; font string. You generally only need these two:
 ;; test
-(setq doom-font (font-spec :family "Menlo" :size 14 :weight 'semi-light)
-      doom-variable-pitch-font (font-spec :family "Menlo" :size 16))
+(setq doom-font (font-spec :family "Roboto Mono" :size 14)
+      doom-variable-pitch-font (font-spec :family "Roboto Mono" :size 14))
 
 (defface +ui/dashboard-face
   `((t (:family "Menlo")))
@@ -45,7 +45,6 @@
 
 (after! highlight-indent-guides
   (setq highlight-indent-guides-character ?\┊))
-
 
 ;; let's keep the window nice and minimal
 (setq default-frame-alist '((undecorated . t)))
