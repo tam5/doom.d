@@ -19,8 +19,8 @@
 ;; They all accept either a font-spec, font string ("Input Mono-12"), or xlfd
 ;; font string. You generally only need these two:
 ;; test
-(setq doom-font (font-spec :family "Roboto Mono" :size 14)
-      doom-variable-pitch-font (font-spec :family "Roboto Mono" :size 14))
+(setq doom-font (font-spec :family "Roboto Mono 1.02" :size 14)
+      doom-variable-pitch-font (font-spec :family "Roboto Mono 1.02" :size 14))
 
 (defface +ui/dashboard-face
   `((t (:family "Menlo")))
