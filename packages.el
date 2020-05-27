@@ -60,3 +60,4 @@
 
 (package! prettier-js)
 (package! request)
+(package! move-text)

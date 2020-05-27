@@ -52,7 +52,9 @@
  :nv "M-<down>" #'evil-mc-make-cursor-move-next-line
  :nv "M-<up>" #'evil-mc-make-cursor-move-prev-line
  :nv "s-r" #'imenu
- :nvi "S-s-<return>" #'doom/window-maximize-buffer)
+ :nvi "S-s-<return>" #'doom/window-maximize-buffer
+ :nv "C-k" #'move-text-up
+ :nv "C-j" #'move-text-down)
 
 ;;
 ;; Mode specific
