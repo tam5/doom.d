@@ -1,12 +1,11 @@
 # -*- mode: snippet -*-
-# name: class method
+# name: public method
 # key: met
-# uuid: met
 # --
 /**
  *
  */
-${1:public} function ${2:name}($3)
-{
-    `%`$0
-}
+ public function $1($2)
+ {
+     $3
+ }
