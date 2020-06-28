@@ -1,0 +1,11 @@
+# -*- mode: snippet -*-
+# name: protected method
+# key: pmet
+# --
+/**
+ *
+ */
+ protected function $1($2)
+ {
+     $3
+ }
