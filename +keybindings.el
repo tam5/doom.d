@@ -46,7 +46,7 @@
  :n "-" #'dired-jump
  :n "C-p" #'+ivy/projectile-find-file
  :n "gr" #'lsp-find-references
- :ni "C-j" #'emmet-expand-yas
+ :ni "C-y" #'emmet-expand-yas
  :nvi "C-a" #'evil-numbers/inc-at-pt
  :nvi "C-s" #'evil-numbers/dec-at-pt
  :nv "M-<down>" #'evil-mc-make-cursor-move-next-line
