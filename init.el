@@ -19,15 +19,13 @@
        ;;japanese
 
        :completion
-       (company          ; the ultimate code completion backend
-        +auto
-        +childframe)
+       company           ; the ultimate code completion backend
        ;;helm              ; the *other* search engine for love and life
        ;;ido               ; the other *other* search engine...
        (ivy +fuzzy)      ; a search engine for love and life
 
        :ui
-       better-company
+       ; better-company
        ;;deft              ; notational velocity for Emacs
        doom              ; what makes DOOM look the way it does
        dashboard         ; a nifty splash screen for Emacs
@@ -40,16 +38,14 @@
        nav-flash         ; blink the current line after jumping
        ;;neotree           ; a project drawer, like NERDTree for vim
        ophints           ; highlight the region an operation acts on
-       (popup            ; tame sudden yet inevitable temporary windows
-        +all             ; catch all popups that start with an asterix
-        +defaults)       ; default popup rules
+       (popup +defaults)   ; tame sudden yet inevitable temporary windows
        ;;pretty-code       ; replace bits of code with pretty symbols
        ;;tabs              ; an tab bar for Emacs
        treemacs          ; a project drawer, like neotree but cooler
        ;;unicode           ; extended unicode support for various languages
        vc-gutter         ; vcs diff in the fringe
        vi-tilde-fringe   ; fringe tildes to mark beyond EOB
-       window-select     ; visually switch windows
+       ; window-select     ; visually switch windows
        workspaces        ; tab emulation, persistence & separate workspaces
        ;;zen               ; distraction-free coding or writing
 
@@ -63,7 +59,7 @@
        multiple-cursors  ; editing in many places at once
        ;;objed             ; text object editing for the innocent
        ;;parinfer          ; turn lisp into python, sort of
-       rotate-text       ; cycle region at point between text candidates
+       ; rotate-text       ; cycle region at point between text candidates
        snippets          ; my elves. They type so I don't have to
        ;;word-wrap         ; soft wrapping with language-aware indent
 
@@ -71,6 +67,7 @@
        dired             ; making dired pretty [functional]
        electric          ; smarter, keyword-based electric-indent
        ibuffer           ; interactive buffer management
+       undo              ; persistent, smarter undo for your inevitable mistakes
        vc                ; version-control and Emacs, sitting in a tree
 
        :term
@@ -78,6 +75,11 @@
        ;;shell             ; a terminal REPL for Emacs
        ;;term              ; terminals in Emacs
        ;;vterm             ; another terminals in Emacs
+
+       :checkers
+       syntax              ; tasing you for every semicolon you forget
+       ;;spell             ; tasing you for misspelling mispelling
+       ;;grammar           ; tasing grammar mistake every you make
 
        :tools
        ;;ansible
@@ -87,11 +89,8 @@
        editorconfig      ; let someone else argue about tabs vs spaces
        ;;ein               ; tame Jupyter notebooks with emacs
        (eval +overlay)     ; run code, run (also, repls)
-       flycheck          ; tasing you for every semicolon you forget
-       flyspell          ; tasing you for misspelling mispelling
        ;;gist              ; interacting with github gists
-       (lookup           ; helps you navigate your code and documentation
-        +docsets)        ; ...or in Dash docsets locally
+       lookup              ; helps you navigate your code and documentation
        lsp
        ;;macos             ; MacOS-specific commands
        magit             ; a git porcelain for Emacs
@@ -138,13 +137,7 @@
        ;;nim               ; python + lisp at the speed of c
        ;;nix               ; I hereby declare "nix geht mehr!"
        ;;ocaml             ; an objective camel
-       (org              ; organize your plain life in plain text
-        +dragndrop       ; drag & drop files/images into org buffers
-        ;;+hugo            ; use Emacs for hugo blogging
-        ;;+jupyter        ; ipython/jupyter support for babel
-        ;;+pandoc          ; export-with-pandoc support
-        ;;+pomodoro        ; be fruitful with the tomato technique
-        +present)        ; using org-mode for presentations
+       org               ; organize your plain life in plain text
        ;;perl              ; write code no one else can comprehend
        (php +lsp)              ; perl's insecure younger brother
        ;;plantuml          ; diagrams for confusing people more
@@ -163,6 +156,7 @@
        ;;swift             ; who asked for emoji variables?
        ;;terra             ; Earth and Moon in alignment for performance.
        web               ; the tubes
+       yaml              ; JSON, but readable
 
        :email
        ;;(mu4e +gmail)
@@ -179,47 +173,3 @@
        :config
        ;;literate
        (default +bindings +smartparens))
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(ansi-color-names-vector
-   ["#1C262B" "#ff5370" "#c3e88d" "#ffcb6b" "#82aaff" "#c792ea" "#89DDFF" "#EEFFFF"])
- '(custom-safe-themes
-   (quote
-    ("c6b93ff250f8546c7ad0838534d46e616a374d5cb86663a9ad0807fd0aeb1d16" "0bcc8aa5a96de254675a2d91b98870de93c1565eb153d14d1b5e292e25f15bed" "53f8223005ceb058848fb92c2c4752ffdfcd771f8ad4324b3d0a4674dec56c44" default)))
- '(fci-rule-color "#37474F")
- '(jdee-db-active-breakpoint-face-colors (cons "#171F24" "#c792ea"))
- '(jdee-db-requested-breakpoint-face-colors (cons "#171F24" "#c3e88d"))
- '(jdee-db-spec-breakpoint-face-colors (cons "#171F24" "#37474F"))
- '(objed-cursor-color "#ff5370")
- '(pdf-view-midnight-colors (cons "#EEFFFF" "#263238"))
- '(vc-annotate-background "#263238")
- '(vc-annotate-color-map
-   (list
-    (cons 20 "#c3e88d")
-    (cons 40 "#d7de81")
-    (cons 60 "#ebd476")
-    (cons 80 "#ffcb6b")
-    (cons 100 "#fcb66b")
-    (cons 120 "#f9a16b")
-    (cons 140 "#f78c6c")
-    (cons 160 "#e78e96")
-    (cons 180 "#d690c0")
-    (cons 200 "#c792ea")
-    (cons 220 "#d97dc1")
-    (cons 240 "#ec6898")
-    (cons 260 "#ff5370")
-    (cons 280 "#cd5067")
-    (cons 300 "#9b4d5f")
-    (cons 320 "#694a57")
-    (cons 340 "#37474F")
-    (cons 360 "#37474F")))
- '(vc-annotate-very-old-color nil))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
