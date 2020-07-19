@@ -19,8 +19,8 @@
 ;; They all accept either a font-spec, font string ("Input Mono-12"), or xlfd
 ;; font string. You generally only need these two:
 ;; test
-(setq doom-font (font-spec :family "Roboto Mono 1.02" :size 14)
-      doom-variable-pitch-font (font-spec :family "Roboto Mono 1.02" :size 14))
+(setq doom-font (font-spec :family "Menlo" :size 14)
+      doom-variable-pitch-font (font-spec :family "Menlo" :size 14))
 
 (defface +ui/dashboard-face
   `((t (:family "Menlo")))
@@ -58,14 +58,14 @@
 ;; some uniform gutters to add some breathing room
 (setq frame-resize-pixelwise t)
 
-(set-frame-size
- (selected-frame)
- (- (display-pixel-width) (* 3 +ui/frame-gutter-factor))
- (- (display-pixel-height) (* 6 +ui/frame-gutter-factor))
- t)
+(defun +ui/snap-frame-to-view ()
+  (interactive)
+  (let* ((attrs (frame-monitor-workarea))
+         (x (+ (pop attrs) +ui/frame-gutter-factor))
+         (y (+ (pop attrs) +ui/frame-gutter-factor))
+         (width (- (pop attrs) (* 3 +ui/frame-gutter-factor)))
+         (height (- (pop attrs) (* 2 +ui/frame-gutter-factor))))
+    (set-frame-size (selected-frame) width height t)
+    (set-frame-position (selected-frame) x y)))
 
-(defun +ui/reposition ()
-  "Reposition the frame to be centered on the screen."
-  (set-frame-position (selected-frame) +ui/frame-gutter-factor (* 2 +ui/frame-gutter-factor)))
-
-(add-hook 'window-setup-hook #'+ui/reposition)
+(add-hook 'window-setup-hook #'+ui/snap-frame-to-view)
